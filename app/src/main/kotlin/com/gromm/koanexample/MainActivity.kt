@@ -7,28 +7,15 @@ import android.widget.EditText
 import kotlinx.android.koan.*
 import android.view.Gravity
 import android.view.ViewManager
-import com.github.mikephil.charting.charts.RadarChart
-import com.github.mikephil.charting.utils.XLabels
-import com.github.mikephil.charting.utils.YLabels
-import com.github.mikephil.charting.utils.Legend
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.charts.*
+import com.github.mikephil.charting.utils.*
+import com.github.mikephil.charting.data.*
 import android.util.Log
 import com.github.mikephil.charting.interfaces.OnChartValueSelectedListener
-import com.github.mikephil.charting.charts.Chart
-import kotlin.dom.getCurrentTarget
 import com.github.mikephil.charting.utils.Legend.LegendForm
-import com.github.mikephil.charting.data.RadarData
-import com.github.mikephil.charting.data.RadarDataSet
 import android.graphics.Color
 import android.util.DisplayMetrics
 import java.util.ArrayList
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition
 import com.github.mikephil.charting.utils.YLabels.YLabelPosition
 import com.github.mikephil.charting.utils.Legend.LegendPosition
@@ -41,10 +28,6 @@ public class MainActivity() : Activity(), OnChartValueSelectedListener {
     override fun onNothingSelected() {
 
     }
-
-    fun ViewManager.lineChart(init: LineChart.() -> Unit = {}) = __dslAddView({LineChart(it)}, init, this)
-    fun ViewManager.radarChart(init: RadarChart.() -> Unit = {}) = __dslAddView({ RadarChart(it)}, init, this)
-    fun ViewManager.barChart(init: BarChart.() -> Unit = {}) = __dslAddView({ BarChart(it)}, init, this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<Activity>.onCreate(savedInstanceState)
@@ -121,7 +104,7 @@ public class MainActivity() : Activity(), OnChartValueSelectedListener {
             radarChart {
                 layoutParams(width = widthScreen, height = heightScreen / 3)
 
-                fun getRadarData(): RadarData? {
+                fun getRadarData(): RadarData {
                     var mult = 150
                     var cnt = 9
 
@@ -132,42 +115,37 @@ public class MainActivity() : Activity(), OnChartValueSelectedListener {
 
                     var xVals = (0..cnt) map { it -> mParties[it % mParties.size] }
 
-                    var set1 = RadarDataSet(generateSourceY(2), "Set 1")
-                    set1.setColor(Color.RED)
-                    set1.setDrawFilled(true)
-                    set1.setLineWidth(2f)
-
-                    var set2 = RadarDataSet(generateSourceY(3), "Set 2")
-                    set2.setColor(Color.GREEN)
-                    set2.setDrawFilled(true)
-                    set2.setLineWidth(2f)
-
-                    var set3 = RadarDataSet(generateSourceY(4), "Set 3")
-                    set3.setColor(Color.BLUE)
-                    set3.setDrawFilled(true)
-                    set3.setLineWidth(2f)
-
-                    var set4 = RadarDataSet(generateSourceY(5), "Set 4")
-                    set4.setColor(Color.CYAN)
-                    set4.setDrawFilled(true)
-                    set4.setLineWidth(2f)
-
-                    return RadarData(xVals.toArrayList(), arrayListOf(set1, set2, set3, set4))
+                    return RadarData(xVals.toArrayList(), arrayListOf(
+                           RadarDataSet(generateSourceY(2), "Set1") {
+                            color = Color.RED
+                            lineWidth = 2f
+                            drawFilled = true
+                        }, RadarDataSet(generateSourceY(3), "Set2") {
+                            color = Color.GREEN
+                            lineWidth = 2f
+                            drawFilled = true
+                        }, RadarDataSet(generateSourceY(4), "Set3") {
+                            color = Color.BLUE
+                            lineWidth = 2f
+                            drawFilled = true
+                        }, RadarDataSet(generateSourceY(5), "Set4") {
+                            color = Color.CYAN
+                            lineWidth = 2f
+                            drawFilled = true
+                        }))
                 }
 
-                setDescription("")
-                setUnit(" $")
-                setDrawUnitsInChart(true)
-                setWebLineWidth(1.5f)
-                setWebLineWidthInner(0.75f)
-                setWebAlpha(100)
-                setDrawYValues(true)
+                description = ""
+                unit = " $"
+                drawUnitsInChart = true
+                webLineWidth = 1.5f
+                webLineWidthInner = 0.75f
+                webAlpha = 100
+                drawYValues = true
 
-                setData(getRadarData())
+                data = getRadarData()
 
                 highlightValues(null)
-
-                invalidate()
 
                 setOnChartValueSelectedListener(this@MainActivity)
 
@@ -180,6 +158,7 @@ public class MainActivity() : Activity(), OnChartValueSelectedListener {
                 yl.setDrawUnitsInYLabel(true)
 
                 var l = getLegend()
+
                 l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART)
                 l.setXEntrySpace(7f)
                 l.setYEntrySpace(5f)
